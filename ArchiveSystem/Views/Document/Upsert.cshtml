@@ -45,7 +45,7 @@
                 <label asp-for="SubCatagory"></label>
             </div>
             <div class="col-6">
-                <select asp-for="SubCatagory" class="form-control" id="subcatagory">
+                <select asp-for="SubCatagory" class="form-control" id="subcatagory" onchange="subCatagoryChange(this);">
                     <!--["proposed", "PMF", "PIP","Budget","Contract"];-->
                     <option>proposal</option>
                     <option>PMF</option>
@@ -86,6 +86,35 @@
 
             </div>
         </div>
+        <div class="form-group row">
+            <div class="col-3">
+                <label asp-for="Region"></label>
+            </div>
+            <div class="col-6">
+                <input asp-for="Region" class="form-control" />
+                <span asp-validation-for="Region" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group row" style="visibility:hidden" id="other">
+            <div class="col-3">
+                <label asp-for="other"></label>
+            </div>
+            <div class="col-6">
+                <select asp-for="other" class="form-control">
+
+                    <option value=""></option>
+                    <option value="TOR/Concept">TOR/Concept</option>
+                    <option value="Data Collection Tools">Data Collection Tools</option>
+                    <option value="Dataset">Dataset</option>
+                    <option value="Report">Report</option>
+                    <option value="Presentation">Presentation</option>
+                    <option value="Other">Other</option>
+                </select>
+                <!--<input asp-for="Catagory" class="form-control" />-->
+                <span asp-validation-for="other" class="text-danger"></span>
+            </div>
+        </div>
+
         <br />
         <div class="form-group row">
             <div class="col-3 offset-3">
@@ -97,49 +126,102 @@
                 <a asp-action="Index" class="btn btn-success form-control">Back to List</a>
             </div>
         </div>
+        <!-- Java scripts-->
+        @section Scripts{
+            <partial name="_ValidationScriptsPartial" />
+            <!-- for name of uploaded file-->
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    $('.custom-file-input').on("change", function () {
+                        var fileName = $(this).val().split("\\").pop();
+                        $(this).next('.custom-file-label').html(fileName);
+                    });
+
+                });
+                //<![CDATA[
+                var catagoryLists = new Array(2)
+                catagoryLists["Document"] = ["proposal", "PMF", "PIP", "Budget", "Contract"];
+                catagoryLists["Studies"] = ["Baseline", "Endline", "Evaluation", "Monitoring", "Research", "Other"];
+
+                /*base line need a new sub:
+                 TOR/Concept
+                 Data Collection Tools
+                 Dataset
+                 Presentation
+                 Other
+                 */
+                //store the file name
+                //a new part:Region
+
+                /* CatagoryChange() is called from the onchange event of a select element.
+                * param selectObj - the select object which fired the on change event.
+                */
+                function catagoryChange(selectObj) {
+                    // get the index of the selected option
+                    var idx = selectObj.selectedIndex;
+                    // get the value of the selected option
+                    var which = selectObj.options[idx].value;
+                    // use the selected option value to retrieve the list of items from the countryLists array
+                    cList = catagoryLists[which];
+                    // get the country select element via its known id
+                    var cSelect = document.getElementById("subcatagory");
+                    // remove the current options from the subcatagory select
+                    var len = cSelect.options.length;
+                    while (cSelect.options.length > 0) {
+                        cSelect.remove(0);
+                    }
+                    var newOption;
+                    // create new options
+                    for (var i = 0; i < cList.length; i++) {
+                        newOption = document.createElement("option");
+                        newOption.value = cList[i];  // assumes option string and value are the same
+                        newOption.text = cList[i];
+                        // add the new option
+                        try {
+                            cSelect.add(newOption);  // this will fail in DOM browsers but is needed for IE
+                        }
+                        catch (e) {
+                            cSelect.appendChild(newOption);
+                        }
+                    }
+                    var ddl = document.getElementById("subcatagory");
+                    var selectedValue = ddl.options[ddl.selectedIndex].value;
+                    if (selectedValue == "Baseline") {
+                        document.getElementById('other').style.visibility = 'visible';
+                    }
+                    else {
+                        document.getElementById('other').style.visibility = 'hidden';
+                    }
+                }
+                function subCatagoryChange(selectObj) {
+                    var ddl = document.getElementById("subcatagory");
+                    var selectedValue = ddl.options[ddl.selectedIndex].value;
+                    if (selectedValue == "Baseline") {
+                        document.getElementById('other').style.visibility = 'visible';
+                    }
+                    else {
+                        document.getElementById('other').style.visibility = 'hidden';
+                    }
+                }
+
+                                        //]]>
+                                        //<![CDATA[
+                /*base line need a new sub:
+                 TOR/Concept
+                 Data Collection Tools
+                 Dataset
+                 Presentation
+                 Other
+                 */
+                                        //store the file name
+                                        //a new part:Region
+
+                /* CatagoryChange() is called from the onchange event of a select element.
+                * param selectObj - the select object which fired the on change event.
+                */
+                                                                    //]]>
+            </script>
+            <!--End of JavaScript-->
+        }
     </form>
 </div>
-<!-- Using java script to fill an selectitem based on choice from other select item-->
-<script type="text/javascript">
- //<![CDATA[
- var catagoryLists = new Array(2)
- catagoryLists["Document"] = ["proposal", "PMF", "PIP","Budget","Contract"];
- catagoryLists["Studies"] = ["Baseline", "Endline", "Evaluation", "Monitoring", "Research", "Other"];
- /* CatagoryChange() is called from the onchange event of a select element.
- * param selectObj - the select object which fired the on change event.
- */
- function catagoryChange(selectObj) {
- // get the index of the selected option
- var idx = selectObj.selectedIndex;
- // get the value of the selected option
- var which = selectObj.options[idx].value;
- // use the selected option value to retrieve the list of items from the countryLists array
- cList = catagoryLists[which];
- // get the country select element via its known id
- var cSelect = document.getElementById("subcatagory");
- // remove the current options from the subcatagory select
- var len=cSelect.options.length;
- while (cSelect.options.length > 0) {
- cSelect.remove(0);
- }
- var newOption;
- // create new options
- for (var i=0; i<cList.length; i++) {
- newOption = document.createElement("option");
- newOption.value = cList[i];  // assumes option string and value are the same
- newOption.text=cList[i];
- // add the new option
- try {
- cSelect.add(newOption);  // this will fail in DOM browsers but is needed for IE
- }
- catch (e) {
- cSelect.appendChild(newOption);
- }
- }
- }
-//]]>
-</script>
-<!--End of JavaScript-->
-@section Scripts{
-    <partial name="_ValidationScriptsPartial" />
-}

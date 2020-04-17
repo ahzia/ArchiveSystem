@@ -12,30 +12,33 @@ function loadDataTable() {
             "datatype": "json"
         },
         "columns": [
-            { "data": "year", "width": "7%" },
-            { "data": "grant", "width": "13%" },
-            { "data": "catagory","width": "10%" },
-            { "data": "subCatagory", "width": "15%" },
-            { "data": "about", "width": "15%" },
+            { "data": "year", "width": "2%" },
+            { "data": "grant", "width": "8%" },
+            { "data": "catagory","width": "7%" },
+            { "data": "subCatagory", "width": "8%" },
+            { "data": "about", "width": "8%" },
+            { "data": "other", "width": "7%" },
+            { "data": "region", "width": "8%" },
+            { "data": "fileName", "width": "7%" },
             {
                 "data": "id",
                 "render": function (data) {
                     return `<div class="text-center">
-                        <a class='btn btn-info text-white' style='cursor:pointer; width:100px;'
-                            onclick="">
+                        <a href="/Document/Download?id=+${data}" target="_blank" class='btn btn-info text-white' style='cursor:pointer; width:100px;')                            
+>
                             Download
                         </a>
-                        &nbsp;
+                        
                         <a href="/Document/Upsert?id=${data}" class='btn btn-success text-white' style='cursor:pointer; width:70px;'>
                             Edit
                         </a>
-                        &nbsp;
+                        
                         <a class='btn btn-danger text-white' style='cursor:pointer; width:70px;'
                             onclick=Delete('/Document/Delete?id='+${data})>
                             Delete
                         </a>
                         </div>`;
-                }, "width": "40%" 
+                }, "width": "45%" 
             }
         ],
         "language": {
@@ -70,3 +73,26 @@ function Delete(url) {
         }
     });
 }
+
+function Download(url) {
+           /* $.ajax({
+                url: url,
+                success: function (data) {
+                    if (data.success) {
+                        toastr.success(data.message);
+                    }
+                    else {
+                        toastr.error(data.message);
+                    }
+                }
+            }); */
+        $.ajax({
+            url: url,
+            method: 'GET',       // Worked using POST or PUT. Prefer POST
+            responseType: 'blob', // important
+        }).done(function () {
+            alert('Added');
+        });
+    }
+       
+

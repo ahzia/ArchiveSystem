@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-
 namespace ArchiveSystem.Models
 {
     public class Document
@@ -26,5 +25,9 @@ namespace ArchiveSystem.Models
         //to store the file name
         [Required]
         public String file { get; set; }
+        //new changeses
+        public String fileName { get; set; }
+        public String Region { get; set; }
+        public String other { get; set; }     
     }
 }

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using ArchiveSystem.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ using MimeKit;
 
 namespace ArchiveSystem.Controllers
 {
+    [Authorize]
     public class DocumentController : Controller
     {
         private readonly ApplicationDbContext _db;
@@ -19,6 +21,8 @@ namespace ArchiveSystem.Controllers
 
         [BindProperty] //to directly access object of document
         public DocumentUpsetViewModel Document { get; set; }
+        public string WebRootPath { get; private set; }
+
         //public Document Document { get; set; }
         //for dependincy injection:constractor
         public DocumentController(ApplicationDbContext db,
@@ -54,7 +58,9 @@ namespace ArchiveSystem.Controllers
                 Grant = doc.Grant,
                 Catagory = doc.Catagory,
                 SubCatagory = doc.SubCatagory,
-                About = doc.About
+                About = doc.About,
+                other=doc.other,
+                Region=doc.Region
             };
             return View(Document);
         }
@@ -84,7 +90,10 @@ namespace ArchiveSystem.Controllers
                         Catagory = Document.Catagory,
                         SubCatagory = Document.SubCatagory,
                         About=Document.About,
-                        file=uniqueFileName
+                        file=uniqueFileName,
+                        other=Document.other,
+                        Region=Document.Region,
+                        fileName=Document.file.FileName
                     };
                     _db.Documents.Add(doc);
                 }
@@ -104,6 +113,7 @@ namespace ArchiveSystem.Controllers
                         uniqueFileName = Guid.NewGuid().ToString() + "_" + Document.file.FileName;
                         String filePath = Path.Combine(uploadFolder, uniqueFileName);
                         Document.file.CopyTo(new FileStream(filePath, FileMode.Create));
+                        doc.fileName = Document.file.FileName;
                     }
                     else {
                         //new file not uploaded 
@@ -116,7 +126,9 @@ namespace ArchiveSystem.Controllers
                     doc.SubCatagory = Document.SubCatagory;
                     doc.About = Document.About;
                     doc.file = uniqueFileName;
-                    
+                    doc.Region = Document.Region;
+                    doc.other = Document.other;
+                    doc.fileName = Document.file.FileName;                    
                     //edit up
 
                     _db.Documents.Update(doc);
@@ -129,6 +141,7 @@ namespace ArchiveSystem.Controllers
         }
         #region API Calls
         [HttpGet]
+        
         public async Task<IActionResult> GetAll()
         {
             return Json(new { data = await _db.Documents.ToListAsync() });
@@ -147,14 +160,10 @@ namespace ArchiveSystem.Controllers
             return Json(new { success = true, message = "Delete successful" });
         }
         //private string fileName { get; set; }
-        [HttpGet("download")]
-        public IActionResult DownloadFile(string file)
-        {
-            String filePath=file;
-            return PhysicalFile(filePath, MimeTypes.GetMimeType(filePath), Path.GetFileName(filePath));
-        }
+       
+        
         //to Download file:
-        [HttpDelete]
+        [HttpGet]
         public async Task<IActionResult> Download(int id)
         {
             var documentFromDb = await _db.Documents.FirstOrDefaultAsync(u => u.Id == id);
@@ -162,9 +171,13 @@ namespace ArchiveSystem.Controllers
             {
                 return Json(new { success = false, message = "Error while Deleting" });
             }
-            _db.Documents.Remove(documentFromDb);
-            await _db.SaveChangesAsync();
-            return Json(new { success = true, message = "Delete successful" });
+            string file = documentFromDb.file;
+            //hear
+            string webPath = hostingEnviroment.WebRootPath;
+            String path1 = Path.Combine(webPath, "Document");
+            String filePath = Path.Combine(path1, file);
+            Console.Write(filePath);
+            return PhysicalFile(filePath, MimeTypes.GetMimeType(filePath), Path.GetFileName(filePath));
         }
         #endregion
     }

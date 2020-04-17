@@ -25,5 +25,8 @@ namespace ArchiveSystem.Models
         public String About { get; set; }
         //to copy the file to server
         public IFormFile file { get; set; }
+        public String fileName { get; set; }
+        public String Region { get; set; }
+        public String other { get; set; }
     }
 }
