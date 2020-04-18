@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ArchiveSystem.Controllers
 {
-    [Authorize]
     public class AccountController : Controller
     {
         private readonly UserManager<IdentityUser> userManger;
@@ -53,13 +52,11 @@ namespace ArchiveSystem.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous]
         public IActionResult Login()
         {
             return View();
         }
         [HttpPost]
-        [AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (ModelState.IsValid)

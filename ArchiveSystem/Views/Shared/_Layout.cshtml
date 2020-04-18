@@ -31,9 +31,12 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Document" asp-action="Index">Documents list</a>
                         </li>
-                        
+
                         @if (signInManger.IsSignedIn(User))
                         {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" href="/administration/ListRoles">Roles Administration</a>
+                            </li>
                             <li class="nav-item">
                                 <form method="post" asp-action="logout" asp-controller="Account">
                                     <button type="submit" class="nav-link btn btn-link py-0" style="width:auto">
@@ -44,12 +47,12 @@
                         }
                         else
                         {
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="register">Register</a>
-                    </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="login">Login</a>
-                        </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="register">Register</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="login">Login</a>
+                            </li>
                         }
                     </ul>
                 </div>
